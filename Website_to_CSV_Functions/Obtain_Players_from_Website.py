@@ -21,11 +21,17 @@ def Get_Player_Name_and_Id(player,td,Players):
         player.player_id = '/'.join([pid[2],pid[3]])
         
 def Get_Players_Current_Status(player,td,Is_Current):
-    Status_Abbrev = {'ACT':'Active','RES':'Injured reserve',
+    Status_Abbrev = {'ACT':'Active',
+                     'RES':'Injured reserve',
                      'NON':'Non football related injured reserve',
-                     'SUS':'Suspended','PUP':'Physically unable to perform',
-                     'UDF':'Unsigned draft pick','UFA':'Unsigned free agent',
-                     'EXE':'Exempt'}
+                     'SUS':'Suspended',
+                     'PUP':'Physically unable to perform',
+                     'UDF':'Unsigned draft pick',
+                     'UFA':'Unsigned free agent',
+                     'EXE':'Exempt',
+                     'CUT': 'Cut',
+                     'RSN': 'Reserved Non-Injured',
+                     'NWT': 'Not With Team'}
     if Is_Current:
         player.current_status = Status_Abbrev[td.text]
     else:
@@ -38,15 +44,16 @@ def Get_Years_Played(player,td,Is_Current):
 def Get_Player_Information(Players,td_tags,col_num,name_index,status_index,
                            years_played_index,Is_Current,filename):
     count = 0
-    player=Player()
+    player = Player()
     for td in td_tags:
         index = count % col_num
         if index == name_index:
             Get_Player_Name_and_Id(player,td,Players)
+            print(player)
         elif index == status_index:
             Get_Players_Current_Status(player,td,Is_Current)
         elif index == years_played_index:
-            Get_Years_Played(player,td,Is_Current)
+            Get_Years_Played(player, td, Is_Current)
         elif index == col_num-1:
             Players[player.player_id] = player
             if not os.path.exists(filename):        
@@ -55,7 +62,7 @@ def Get_Player_Information(Players,td_tags,col_num,name_index,status_index,
             Stats = [player.player_id,player.name,player.current_status,player.years_played]
             player.Write_Stats_to_CSV(filename,Stats)
             player=Player()
-        count+=1   
+        count+=1
    
 def Obtain_Players_And_Status(initial_url,url_parameters,Max_Page,Players,soup,filename):
     for page_number in range(1,Max_Page+1):
@@ -73,7 +80,8 @@ def Obtain_Players_And_Status(initial_url,url_parameters,Max_Page,Players,soup,f
 # Storing happens when Get_Player_Information is called
 def Get_and_Store_All_Players_Names_and_Ids(filename):
     Players = {}
-    PlayerType = ['current','historical']
+    # PlayerType = ['current','historical']
+    PlayerType = ['current']
     for playertype in PlayerType:
         for Last_Name_Beginning in list(string.ascii_uppercase):
             print('Getting %s players whose last name starts with %s' % (playertype,
