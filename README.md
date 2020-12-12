@@ -1,3 +1,5 @@
+Originally coded by https://github.com/kendallgillies. Minor modifications made by https://github.com/dniamir
+
 # NFL-Statistics-Scrape
 This code gathers basic statistics, career statistics and game logs provided by the NFL on their website for all players past and present.  The dataset can be found at https://www.kaggle.com/kendallgillies/nflstatistics.
 
